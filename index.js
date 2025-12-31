@@ -1,6 +1,6 @@
 'use strict';
 const http = require('node:http');
-const fs = require('node:fs');
+const pug = require('pug');
 const server = http
   .createServer((req, res) => {
     const now = new Date();
@@ -13,8 +13,26 @@ const server = http
 
     switch (req.method) {
       case 'GET':
-        const rs = fs.createReadStream('./form.html');
-        rs.pipe(res);
+        if (req.url === '/enquetes/yaki-tofu') {
+          res.write(pug.renderFile('./form.pug', {
+            path: req.url,
+            firstItem: '焼肉',
+            secondItem: '湯豆腐'
+          }));
+        } else if (req.url === '/enquetes/rice-bread') {
+          res.write(pug.renderFile('./form.pug', {
+            path: req.url,
+            firstItem: 'ごはん',
+            secondItem: 'パン'
+          }));
+        } else if (req.url === '/enquetes/sushi-pizza') {
+          res.write(pug.renderFile('./form.pug', {
+            path: req.url,
+            firstItem: '寿司',
+            secondItem: 'ピザ'
+          }));
+        }
+        res.end();
         break;
       case 'POST':
         let rawData = '';
@@ -26,7 +44,7 @@ const server = http
             const decoded = decodeURIComponent(rawData);
             console.info(`[${now}] 投稿: ${decoded}`);
             const answer = new URLSearchParams(rawData);
-            res.write(`<h1>${answer.get('name')}さんは、${answer.get('yaki-tofu')}に投票しました。</h1>`);
+            res.write(`<h1>${answer.get('name')}さんは、${answer.get('favorite')}に投票しました。</h1>`);
             res.end();
           });
         break;
