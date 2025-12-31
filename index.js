@@ -13,6 +13,16 @@ const server = http
     console.info( // アクセスログをコンソールに出力
       `Requested by ${req.socket.remoteAddress}`
     );
+
+    // ログアウト処理実装のための条件分岐
+    if (req.url === '/logout') {
+      res,writeHead(401, { // クライアントエラー番号
+        'Content-Type': 'text/plain; charset=utf-8'
+      });
+      res.end('ログアウトしました');
+      return; // 処理を強制終了してログアウト
+    }
+
     res.writeHead(200, { // 200→OK
       'Content-Type': 'text/html; charset=utf-8'
     });
