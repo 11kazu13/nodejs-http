@@ -1,5 +1,6 @@
 'use strict';
 const http = require('node:http');
+const fs = require('node:fs');
 const server = http
   .createServer((req, res) => {
     const now = new Date();
@@ -7,31 +8,35 @@ const server = http
       `[${now}] Requested by ${req.socket.remoteAddress}`
     );
     res.writeHead(200, { // 200→OK
-      'Content-Type': 'text/plain; charset=utf-8'
+      'Content-Type': 'text/html; charset=utf-8'
     });
 
     switch (req.method) {
       case 'GET':
-        res.write(`GET でアクセスされました ${req.url}`);
+        const rs = fs.createReadStream('./form.html');
+        rs.pipe(res);
         break;
       case 'POST':
-        res.write(`POST でアクセスされました ${req.url}`);
         let rawData = '';
         req
           .on('data', chunk => {
             rawData += chunk;
           })
           .on('end', () => {
-            console.info(`[${now}] Data posted: ${rawData}`);
+            const decoded = decodeURIComponent(rawData);
+            console.info(`[${now}] 投稿: ${decoded}`);
+            const answer = new URLSearchParams(rawData);
+            res.write(`<h1>${answer.get('name')}さんは、${answer.get('yaki-tofu')}に投票しました。</h1>`);
+            res.end();
           });
         break;
       case 'DELETE':
         res.write(`DELETE でアクセスされました ${req.url}`);
+        res.end();
         break;
       default:
         break;
     }
-    res.end();
   })
   .on('error', e => { // サーバー側のエラー
     console.error(`[${new Date()}] Server Error`, e);
