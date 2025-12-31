@@ -25,8 +25,11 @@ const server = http
             console.info(`[${now}] Data posted: ${rawData}`);
           });
         break;
-        default:
-          break;
+      case 'DELETE':
+        res.write(`DELETE でアクセスされました ${req.url}`);
+        break;
+      default:
+        break;
     }
     res.end();
   })
