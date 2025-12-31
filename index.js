@@ -16,7 +16,7 @@ const server = http
 
     // ログアウト処理実装のための条件分岐
     if (req.url === '/logout') {
-      res,writeHead(401, { // クライアントエラー番号
+      res.writeHead(401, { // クライアントエラー番号
         'Content-Type': 'text/plain; charset=utf-8'
       });
       res.end('ログアウトしました');
